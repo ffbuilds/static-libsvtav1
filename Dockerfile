@@ -6,9 +6,10 @@ ARG SVTAV1_VERSION=1.2.1
 ARG SVTAV1_URL="https://gitlab.com/AOMediaCodec/SVT-AV1/-/archive/v$SVTAV1_VERSION/SVT-AV1-v$SVTAV1_VERSION.tar.bz2"
 ARG SVTAV1_SHA256=805827daa8aedec4f1362b959f377075e2a811680bfc76b6f4fbf2ef4e7101d4
 
-# bump: alpine /FROM alpine:([\d.]+)/ docker:alpine|^3
-# bump: alpine link "Release notes" https://alpinelinux.org/posts/Alpine-$LATEST-released.html
-FROM alpine:3.16.2 AS base
+# Must be specified
+ARG ALPINE_VERSION
+
+FROM alpine:${ALPINE_VERSION} AS base
 
 FROM base AS download
 ARG SVTAV1_URL
@@ -30,7 +31,7 @@ COPY --from=download /tmp/svtav1/ /tmp/svtav1/
 WORKDIR /tmp/svtav1/Build
 RUN \
   apk add --no-cache --virtual build \
-    build-base cmake nasm && \
+    build-base cmake nasm pkgconf && \
   cmake \
     -G"Unix Makefiles" \
     -DCMAKE_VERBOSE_MAKEFILE=ON \
@@ -39,6 +40,14 @@ RUN \
     -DCMAKE_BUILD_TYPE=Release \
     .. && \
   make -j$(nproc) install && \
+  # Sanity tests
+  pkg-config --exists --modversion --path SvtAv1Dec && \
+  pkg-config --exists --modversion --path SvtAv1Enc && \
+  ar -t /usr/local/lib/libSvtAv1Dec.a && \
+  ar -t /usr/local/lib/libSvtAv1Enc.a && \
+  readelf -h /usr/local/lib/libSvtAv1Dec.a && \
+  readelf -h /usr/local/lib/libSvtAv1Enc.a && \
+  # Cleanup
   apk del build
 
 FROM scratch
