@@ -3,9 +3,9 @@
 # bump: svtav1 /SVTAV1_VERSION=([\d.]+)/ https://gitlab.com/AOMediaCodec/SVT-AV1.git|*
 # bump: svtav1 after ./hashupdate Dockerfile SVTAV1 $LATEST
 # bump: svtav1 link "Release notes" https://gitlab.com/AOMediaCodec/SVT-AV1/-/releases/v$LATEST
-ARG SVTAV1_VERSION=1.4.1
+ARG SVTAV1_VERSION=1.6.0
 ARG SVTAV1_URL="https://gitlab.com/AOMediaCodec/SVT-AV1/-/archive/v$SVTAV1_VERSION/SVT-AV1-v$SVTAV1_VERSION.tar.bz2"
-ARG SVTAV1_SHA256=0e988582f315fe76c909accf5e7f81b975c5bd2b850ee760d8e9fac297f70b5d
+ARG SVTAV1_SHA256=c6b49111a2d4c5113f1ada0c2f716d94bd4a8db704623d453066826401ecdab5
 
 # Must be specified
 ARG ALPINE_VERSION
